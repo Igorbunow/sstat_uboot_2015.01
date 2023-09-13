@@ -1,0 +1,532 @@
+menu "Command line interface"
+	depends on !SPL_BUILD
+
+config HUSH_PARSER
+	bool "Use hush shell"
+	select SYS_HUSH_PARSER
+	help
+	  This option enables the "hush" shell (from Busybox) as command line
+	  interpreter, thus enabling powerful command line syntax like
+	  if...then...else...fi conditionals or `&&' and '||'
+	  constructs ("shell scripts").
+
+	  If disabled, you get the old, much simpler behaviour with a somewhat
+	  smaller memory footprint.
+
+config SYS_HUSH_PARSER
+	bool
+	help
+	  Backward compatibility.
+
+comment "Commands"
+
+menu "Filesystem commands"
+config CMD_BTRFS
+	bool "Enable the 'btrsubvol' command"
+	select FS_BTRFS
+	help
+	  This enables the 'btrsubvol' command to list subvolumes
+	  of a BTRFS filesystem. There are no special commands for
+	  listing BTRFS directories or loading BTRFS files - this
+	  can be done by the generic 'fs' commands (see CMD_FS_GENERIC)
+	  when BTRFS is enabled (see FS_BTRFS).
+
+config CMD_CBFS
+	bool "Enable the 'cbfs' command"
+	depends on FS_CBFS
+	help
+	  Define this to enable support for reading from a Coreboot
+	  filesystem. This is a ROM-based filesystem used for accessing files
+	  on systems that use coreboot as the first boot-loader and then load
+	  U-Boot to actually boot the Operating System. Available commands are
+	  cbfsinit, cbfsinfo, cbfsls and cbfsload.
+
+config CMD_CRAMFS
+	bool "Enable the 'cramfs' command"
+	depends on FS_CRAMFS
+	help
+	  This provides commands for dealing with CRAMFS (Compressed ROM
+	  filesystem). CRAMFS is useful when space is tight since files are
+	  compressed. Two commands are provided:
+
+	     cramfsls   - lists files in a cramfs image
+	     cramfsload - loads a file from a cramfs image
+
+config CMD_EXT2
+	bool "ext2 command support"
+	select FS_EXT4
+	help
+	  Enables EXT2 FS command
+
+config CMD_EXT4
+	bool "ext4 command support"
+	select FS_EXT4
+	help
+	  Enables EXT4 FS command
+
+config CMD_EXT4_WRITE
+	depends on CMD_EXT4
+	bool "ext4 write command support"
+	select EXT4_WRITE
+	help
+	  Enables EXT4 FS write command
+
+config CMD_FAT
+	bool "FAT command support"
+	select FS_FAT
+	help
+	  Support for the FAT fs
+
+config CMD_SQUASHFS
+	bool "SquashFS command support"
+	select FS_SQUASHFS
+	help
+	  Enables SquashFS filesystem commands (e.g. load, ls).
+
+config CMD_FS_GENERIC
+	bool "filesystem commands"
+	help
+	  Enables filesystem commands (e.g. load, ls) that work for multiple
+	  fs types.
+
+config CMD_FS_UUID
+	bool "fsuuid command"
+	help
+	  Enables fsuuid command for filesystem UUID.
+
+config CMD_JFFS2
+	bool "jffs2 command"
+	select FS_JFFS2
+	help
+	  Enables commands to support the JFFS2 (Journalling Flash File System
+	  version 2) filesystem. This enables fsload, ls and fsinfo which
+	  provide the ability to load files, list directories and obtain
+	  filesystem information.
+
+config CMD_MTDPARTS
+	bool "MTD partition support"
+	depends on MTD
+	help
+	  MTD partitioning tool support.
+	  It is strongly encouraged to avoid using this command
+	  anymore along with 'sf', 'nand', 'onenand'. One can still
+	  declare the partitions in the mtdparts environment variable
+	  but better use the MTD stack and the 'mtd' command instead.
+
+config CMD_MTDPARTS_SPREAD
+	bool "Padd partition size to take account of bad blocks"
+	depends on CMD_MTDPARTS
+	help
+	  This enables the 'spread' sub-command of the mtdparts command.
+	  This command will modify the existing mtdparts variable by increasing
+	  the size of the partitions such that 1) each partition's net size is
+	  at least as large as the size specified in the mtdparts variable and
+	  2) each partition starts on a good block.
+
+config CMD_MTDPARTS_SHOW_NET_SIZES
+	bool "Show net size (w/o bad blocks) of partitions"
+	depends on CMD_MTDPARTS
+	help
+	  Adds two columns to the printed partition table showing the
+	  effective usable size of a partition, if bad blocks are taken
+	  into account.
+
+config MTDIDS_DEFAULT
+	string "Default MTD IDs"
+	depends on MTD || SPI_FLASH
+	help
+	  Defines a default MTD IDs list for use with MTD partitions in the
+	  Linux MTD command line partitions format.
+
+config MTDPARTS_DEFAULT
+	string "Default MTD partition scheme"
+	depends on MTD || SPI_FLASH
+	help
+	  Defines a default MTD partitioning scheme in the Linux MTD command
+	  line partitions format
+
+config CMD_REISER
+	bool "reiser - Access to reiserfs filesystems"
+	help
+	  This provides two commands which operate on a resierfs filesystem,
+	  commonly used some years ago:
+
+	    reiserls - list files
+	    reiserload - load a file
+
+config CMD_YAFFS2
+	bool "yaffs2 - Access of YAFFS2 filesystem"
+	depends on YAFFS2
+	default y
+	help
+	  This provides commands for accessing a YAFFS2 filesystem. Yet
+	  Another Flash Filesystem 2 is a filesystem designed specifically
+	  for NAND flash. It incorporates bad-block management and ensures
+	  that device writes are sequential regardless of filesystem
+	  activity.
+
+config CMD_ZFS
+	bool "zfs - Access of ZFS filesystem"
+	help
+	  This provides commands to accessing a ZFS filesystem, commonly used
+	  on Solaris systems. Two sub-commands are provided:
+
+	    zfsls - list files in a directory
+	    zfsload - load a file
+
+	  See doc/README.zfs for more details.
+
+endmenu
+
+
+menu "Info commands"
+
+config CMD_BDI
+	bool "bdinfo"
+	help
+	  Print board info
+
+config CMD_CONSOLE
+	bool "coninfo"
+	help
+	  Print console devices and information.
+
+config CMD_LICENSE
+	bool "license"
+	help
+	  Print GPL license text
+
+endmenu
+
+menu "Boot commands"
+
+config CMD_BOOTD
+	bool "bootd"
+	help
+	  Run the command stored in the environment "bootcmd", i.e.
+	  "bootd" does the same thing as "run bootcmd".
+
+config CMD_BOOTM
+	bool "bootm"
+	default y
+	help
+	  Boot an application image from the memory.
+
+config CMD_GO
+	bool "go"
+	default y
+	help
+	  Start an application at a given address.
+
+config CMD_RUN
+	bool "run"
+	help
+	  Run the command in the given environment variable.
+
+config CMD_IMI
+	bool "iminfo"
+	help
+	  Print header information for application image.
+
+config CMD_IMLS
+	bool "imls"
+	help
+	  List all images found in flash
+
+config CMD_XIMG
+	bool "imxtract"
+	help
+	  Extract a part of a multi-image.
+
+endmenu
+
+menu "Environment commands"
+
+config CMD_EXPORTENV
+	bool "env export"
+	default y
+	help
+	  Export environments.
+
+config CMD_IMPORTENV
+	bool "env import"
+	default y
+	help
+	  Import environments.
+
+config CMD_EDITENV
+	bool "editenv"
+	help
+	  Edit environment variable.
+
+config CMD_SAVEENV
+	bool "saveenv"
+	help
+	  Run the command in the given environment variable.
+
+endmenu
+
+menu "Memory commands"
+
+config CMD_MEMORY
+	bool "md, mm, nm, mw, cp, cmp, base, loop"
+	help
+	  Memeory commands.
+	    md - memory display
+	    mm - memory modify (auto-incrementing address)
+	    nm - memory modify (constant address)
+	    mw - memory write (fill)
+	    cp - memory copy
+	    cmp - memory compare
+	    base - print or set address offset
+	    loop - initinite loop on address range
+
+config CMD_CRC32
+	bool "crc32"
+	default y
+	help
+	  Compute CRC32.
+
+config LOOPW
+	bool "loopw"
+	help
+	  Infinite write loop on address range
+
+config CMD_MEMTEST
+	bool "crc32"
+	help
+	  Simple RAM read/write test.
+
+config CMD_MX_CYCLIC
+	bool "mdc, mwc"
+	help
+	  mdc - memory display cyclic
+	  mwc - memory write cyclic
+
+config CMD_MEMINFO
+	bool "meminfo"
+	help
+	  Display memory information.
+
+endmenu
+
+menu "Device access commands"
+
+config CMD_LOADB
+	bool "loadb"
+	help
+	  Load a binary file over serial line.
+
+config CMD_LOADS
+	bool "loads"
+	help
+	  Load an S-Record file over serial line
+
+config CMD_FLASH
+	bool "flinfo, erase, protect"
+	help
+	  NOR flash support.
+	    flinfo - print FLASH memory information
+	    erase - FLASH memory
+	    protect - enable or disable FLASH write protection
+
+config CMD_NAND
+	bool "nand"
+	help
+	  NAND support.
+
+config CMD_SPI
+	bool "sspi"
+	help
+	  SPI utility command.
+
+config CMD_I2C
+	bool "i2c"
+	help
+	  I2C support.
+
+config CMD_BOOTLOGO
+	bool "bootlogo"
+	help
+	  bootlog support.
+
+config CMD_USB
+	bool "usb"
+	help
+	  USB support.
+
+config CMD_FPGA
+	bool "fpga"
+	help
+	  FPGA support.
+
+endmenu
+
+
+menu "Shell scripting commands"
+
+config CMD_ECHO
+	bool "echo"
+	help
+	  Echo args to console
+
+config CMD_ITEST
+	bool "itest"
+	help
+	  Return true/false on integer compare.
+
+config CMD_SOURCE
+	bool "source"
+	help
+	  Run script from memory
+
+endmenu
+
+menu "Network commands"
+
+config CMD_NET
+	bool "bootp, tftpboot"
+	help
+	  Network commands.
+	  bootp - boot image via network using BOOTP/TFTP protocol
+	  tftpboot - boot image via network using TFTP protocol
+
+config CMD_TFTPPUT
+	bool "tftp put"
+	help
+	  TFTP put command, for uploading files to a server
+
+config CMD_TFTPSRV
+	bool "tftpsrv"
+	help
+	  Act as a TFTP server and boot the first received file
+
+config CMD_RARP
+	bool "rarpboot"
+	help
+	  Boot image via network using RARP/TFTP protocol
+
+config CMD_DHCP
+	bool "dhcp"
+	help
+	  Boot image via network using DHCP/TFTP protocol
+
+config CMD_NFS
+	bool "nfs"
+	help
+	  Boot image via network using NFS protocol.
+
+config CMD_PING
+	bool "ping"
+	help
+	  Send ICMP ECHO_REQUEST to network host
+
+config CMD_CDP
+	bool "cdp"
+	help
+	  Perform CDP network configuration
+
+config CMD_SNTP
+	bool "sntp"
+	help
+	  Synchronize RTC via network
+
+config CMD_DNS
+	bool "dns"
+	help
+	  Lookup the IP of a hostname
+
+config CMD_LINK_LOCAL
+	bool "linklocal"
+	help
+	  Acquire a network IP address using the link-local protocol
+
+config CMD_NETUPGRADE
+	bool "netupgrade"
+	help
+	  Auto Net upgrade on booting
+
+config CMD_MII
+	bool "mii"
+	help
+	  Enable MII interface debud commands
+
+endmenu
+
+menu "USB commands"
+config CMD_FASTBOOT
+        bool "fastboot"
+        help
+          This enables the command fastboot which enables the Android
+          fastboot mode for the platform USB device. Fastboot is a USB
+          protocol for downloading images, flashing and device control
+          used on Android devices.
+config CMD_USBSTART
+        bool "usbstart"
+        help
+          Hook usb ether to ETHERNET
+config USB_GADGET_MSB250X
+	def_bool y if CMD_FASTBOOT || CMD_USBSTART
+config USB_GADGET
+        def_bool y if USB_GADGET_MSB250X
+config USBDOWNLOAD_GADGET
+        def_bool y if CMD_FASTBOOT
+config USB_ETHER
+	def_bool y if CMD_USBSTART
+config USB_ETH_CDC
+	def_bool y if USB_ETHER
+config USB_ETH_RNDIS
+	def_bool y if USB_ETHER
+endmenu
+
+menu "Misc commands"
+
+config CMD_TIME
+	bool "time"
+	help
+	  Run commands and summarize execution time.
+
+# TODO: rename to CMD_SLEEP
+config CMD_MISC
+	bool "sleep"
+	help
+	  Delay execution for some time
+
+config CMD_TIMER
+	bool "timer"
+	help
+	  Access the system timer.
+
+config CMD_SETGETDCR
+	bool "getdcr, setdcr, getidcr, setidcr"
+	depends on 4xx
+	help
+	  getdcr - Get an AMCC PPC 4xx DCR's value
+	  setdcr - Set an AMCC PPC 4xx DCR's value
+	  getidcr - Get a register value via indirect DCR addressing
+	  setidcr - Set a register value via indirect DCR addressing
+config CMD_SIGAUTH
+	bool "sigauth"
+	help
+	  This enables the command sigauth which only authenticate image 
+	  with signature.
+config SRAM_DUMMY_ACCESS_RSA
+	bool "dummy access RSA"
+	depends on CMD_SIGAUTH
+
+config CMD_CUSTOMER_INIT
+    bool 'SSTAR CUSTOMER INIT'
+
+config CMD_KEYPAD_FORCE_UPGRADE
+	bool "KEYPAD FORCE UPGRADE"
+	depends on SSTAR_SAR
+
+endmenu
+endmenu
+config XZ
+	bool "XZ"
+
+config MZ
+	bool "MZ"
+config SILENT_CONSOLE
+	bool "SILENT_CONSOLE"
