@@ -1,3 +1,38 @@
+menu "Boot menu"
+
+config CMD_BOOTMENU
+	bool "bootmenu"
+	default n
+	help
+	  Print board info
+	  
+config MENU
+	bool "config_menu"
+	default n
+	help
+	  Print board info
+
+config AUTOBOOT_KEYED
+	bool "autoboot_key"
+	default n
+	help
+	  Print console devices and information.
+
+config MENU_SHOW
+	bool "config_menu_show"
+	default n
+	help
+	  Print GPL license text
+
+config BOOTDELAY
+	int "bootmenu_delay"
+	default 10
+	help
+	  Print GPL license text
+
+endmenu
+
+
 menu "Command line interface"
 	depends on !SPL_BUILD
 

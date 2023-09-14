@@ -4,13 +4,14 @@
 /*------------------------------------------------------------------------------
     Constant
 -------------------------------------------------------------------------------*/
+
 /* This is columbus2 hardware */
 #define CONFIG_ARCH_INFINITY2M	1
 #define CONFIG_ARMCORTEXA7		/* This is an ARM V7 CPU core */
 #define CONFIG_SYS_L2CACHE_OFF		/* No L2 cache */
 /*#define CONFIG_SYS_ARCH_TIMER   1*/
 #define CONFIG_MS_PIU_TIMER   1
-#define CONFIG_AUTOBOOT_KEYED
+/*#define CONFIG_AUTOBOOT_KEYED*/
 #define CONFIG_AUTOBOOT_DELAY_STR "\x0d" /* press ENTER to interrupt BOOT */
 
 #define CONFIG_DISPLAY_BOARDINFO    1
@@ -40,7 +41,7 @@
 -------------------------------------------------------------------------------*/
 
 /* boot delay time */
-#define CONFIG_BOOTDELAY	0
+/*#define CONFIG_BOOTDELAY	0*/
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 
 #define CONFIG_MS_SHOW_LOGO 1
